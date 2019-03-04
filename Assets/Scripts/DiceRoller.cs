@@ -48,7 +48,7 @@ public class DiceRoller : MonoBehaviour
         dicesDoneRolling = 0;
         int result = 0;
         Array.ForEach (dices, d => result += d.Result ());
-        resultText.text = "Result: " + result;
+        resultText.text = result.ToString ();
         Array.ForEach (dices, d => d.ResetPosition (DoneReseting));
 
         closupShotCamera.SetActive (true);
