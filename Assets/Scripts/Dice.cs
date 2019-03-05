@@ -6,6 +6,8 @@ using System;
 public class Dice : MonoBehaviour
 {
 
+    public AudioClip[] diceSounds;
+    private AudioSource audio;
     public Vector3 displayPosition;
     private Rigidbody rb;
     private Dictionary<Vector3, int> orientations;
@@ -21,6 +23,8 @@ public class Dice : MonoBehaviour
             [Vector3.back] = 2,
         };
         rb = GetComponent<Rigidbody> ();
+        audio = GetComponent<AudioSource> ();
+        rb.maxAngularVelocity = 10;
     }
 
     private void Update () {
@@ -33,13 +37,15 @@ public class Dice : MonoBehaviour
     public void Roll (Action done) {
         onDoneRolling = done;
         rolling = true;
-        rb.AddForce (Vector3.up * 1.1f, ForceMode.Impulse);
-        rb.AddTorque (UnityEngine.Random.insideUnitSphere * 0.25f, ForceMode.Impulse);
+        rb.AddForce (Vector3.up * 0.1f, ForceMode.Impulse);
+       // rb.AddTorque (new Vector3 (UnityEngine.Random.Range (0, 100f), UnityEngine.Random.Range (0, 100f), UnityEngine.Random.Range (0, 100f)), ForceMode.Impulse);
+        rb.AddTorque (UnityEngine.Random.insideUnitSphere * 0.1f, ForceMode.Impulse);
+       // print (rb.maxAngularVelocity = 100);
     }
 
     public int Result () {
         foreach (var e in orientations) {
-            if (Physics.Raycast (transform.position, transform.TransformDirection (e.Key))) {
+            if (Physics.Raycast (transform.position, transform.TransformDirection (e.Key), 0.5f)) {
                 //print (e.Value);
                 return e.Value;
             }
@@ -56,7 +62,7 @@ public class Dice : MonoBehaviour
     }
 
     private IEnumerator Transition (Action<Vector3> result, float duration, Vector3 initial, Vector3 target, Action callback = null) {
-		for (float percent = 0; percent <= 1; percent += Time.unscaledDeltaTime / duration) {
+		for (float percent = 0; percent <= 1; percent += Time.deltaTime / duration) {
 			result (Vector3.Lerp (initial, target, percent));
 			yield return null;
 		}
@@ -64,5 +70,14 @@ public class Dice : MonoBehaviour
         if (callback != null)
 		    callback ();
 	}
+
+    private void OnCollisionEnter (Collision col) {
+        //audio.Play ();
+        
+        if (!rolling)
+            return;
+
+        audio.PlayOneShot (diceSounds [UnityEngine.Random.Range (0, diceSounds.Length)], col.relativeVelocity.sqrMagnitude / 10);
+    }
 
 }

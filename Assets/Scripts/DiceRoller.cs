@@ -7,9 +7,13 @@ using TMPro;
 public class DiceRoller : MonoBehaviour
 {
 
+    public GameObject oneDie;
+    public GameObject twoDices;
+    public GameObject threeDices;
+    public GameObject fourDices;
     public GameObject closupShotCamera;
     public TextMeshProUGUI resultText;
-    public Dice [] dices;
+    private Dice [] dices;
     private int dicesDoneRolling = 0;
     private int dicesDoneReseting = 0;
 
@@ -17,20 +21,48 @@ public class DiceRoller : MonoBehaviour
 
     private void Start()
     {
+        SetNumberOfDices (2);
         RollDices ();
+       
     }
     private void Update()
     {
-         if (Input.GetKeyDown (KeyCode.V)) {
-           
-        }
+   
 
-        if (Input.GetKeyDown (KeyCode.Space)) {
-      
+        if (Input.acceleration.sqrMagnitude > 5) {
+            RollDices ();
         }
-
         
 
+    }
+
+    public void SetNumberOfDices (int number) {
+        if (!canRoll)
+            return;
+        oneDie.SetActive (false);
+        twoDices.SetActive (false);
+        threeDices.SetActive (false);
+        fourDices.SetActive (false);
+        switch (number) {
+            case 1:
+                dices = oneDie.GetComponentsInChildren<Dice> ();
+                oneDie.SetActive (true);
+                break;
+            case 2:
+                dices = twoDices.GetComponentsInChildren<Dice> ();
+                twoDices.SetActive (true);
+                break;
+            case 3:
+                dices = threeDices.GetComponentsInChildren<Dice> ();
+                threeDices.SetActive (true);
+                break;
+            case 4:
+                dices = fourDices.GetComponentsInChildren<Dice> ();
+                fourDices.SetActive (true);
+                break;
+
+        }
+        
     }
 
     public void RollDices () {
